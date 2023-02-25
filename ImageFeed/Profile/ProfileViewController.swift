@@ -1,30 +1,76 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
+    
+    private let profileService = ProfileService.shared
+    
+    private let profileImageView = UIImageView(image: .profileImage).withConstraints()
+    private let profileNameLabel = UILabel(text: "", font: .ysBold(23))
+    private let loginNameLabel = UILabel(text: "", textColor: .ypGray)
+    private let profileDescription = UILabel(text: "")
+    
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main) { [weak self] _ in
+                    guard let self else { return }
+                    self.updateAvatar()
+                }
+        updateAvatar()
         setupUI()
-        
+        updateProfileInfo(profile: profileService.profile)
     }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        
+        let processor = RoundCornerImageProcessor(cornerRadius: profileImageView.frame.size.height / 2)
+        profileImageView.kf.indicatorType = .activity
+        profileImageView.kf.setImage(with: url,
+                                     placeholder: UIImage(named: "ProfilePlaceholder"),
+                                     options: [.processor(processor)]) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let model):
+                self.profileImageView.image = model.image
+                self.profileImageView.backgroundColor = .clear
+            case .failure(let error):
+                print(error)
+                self.updateAvatar()
+            }
+        }
+    }
+    
+    private func updateProfileInfo(profile: ProfileService.Profile?) {
+        profileNameLabel.text = profile?.name ?? "Your name"
+        loginNameLabel.text = profile?.loginName ?? "@user"
+        profileDescription.text = profile?.bio
+    }
+    
     //Общий метод для отображения всех View на экране
     func setupUI() {
-        
-        //Отображение изображения профиля
-        let profileImage = UIImage(named: "ProfilePhoto")
-        let profileImageView = UIImageView(image: profileImage)
-        profileImageView.translatesAutoresizingMaskIntoConstraints = false
+        profileImageView.layer.cornerRadius = profileImageView.frame.size.height / 2
+        profileImageView.clipsToBounds = true
+        view.backgroundColor = .ypBlack
         view.addSubview(profileImageView)
-        
         //Проверка на наличие изображения для кнопки Logout. Если ее нет, метод ничего не отобразит, но в консоль напечатает из-за чего это произошло.
         let buttonImage = UIImage(named: "ProfileExitImage")
         guard let buttonImage else {
             print("Ошибка загрузки изображения для кнопки Logout")
             return
         }
-        
         //Настройка кнопки выхода из профиля
         let button = UIButton.systemButton(with: buttonImage,
                                            target: self,
@@ -32,28 +78,9 @@ final class ProfileViewController: UIViewController {
         button.tintColor = .ypRed
         button.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(button)
-        
-        //Настройка имени пользователя
-        let profileNameLabel = UILabel()
-        profileNameLabel.text = "Екатерина Новикова"
-        profileNameLabel.textColor = .ypWhite
-        profileNameLabel.font = UIFont(name: "YandexSansDisplay-Bold", size: 23)
-        
-        //Настройка никнейма пользователя
-        let userNameLabel = UILabel()
-        userNameLabel.text = "@ekaterina_nov"
-        userNameLabel.textColor = .ypGray
-        userNameLabel.font = UIFont(name: "YandexSansDisplay-Regular", size: 13)
-        
-        //Настройка описания профиля пользователя
-        let profileDescription = UILabel()
-        profileDescription.text = "Описание"
-        profileDescription.textColor = .ypWhite
-        profileDescription.font = UIFont(name: "YandexSansDisplay-Regular", size: 13)
-        
         //Настройка StackView для всех Label(Имя, Ник, Описание)
         let profileLabelStackView = UIStackView(arrangedSubviews: [profileNameLabel,
-                                                                   userNameLabel,
+                                                                   loginNameLabel,
                                                                    profileDescription])
         profileLabelStackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileLabelStackView)
@@ -76,4 +103,5 @@ final class ProfileViewController: UIViewController {
     //Заглушка для настройки кнопки. Пока не используется
     @objc
     private func didTapLogoutButton() {}
+    
 }
