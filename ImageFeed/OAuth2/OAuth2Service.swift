@@ -2,53 +2,60 @@ import Foundation
 
 final class OAuth2Service {
     
-    private enum NetworkError: Error {
-        case codeError
+    static let shared = OAuth2Service()
+    private let urlSession = URLSession.shared
+    private var task: URLSessionTask?
+    private var lastCode: String?
+    
+    private (set) var authToken: String? {
+        get { OAuth2TokenStorage().token }
+        set { OAuth2TokenStorage().token = newValue }
     }
     
-    func fetchAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
-        var urlComponents = URLComponents(string: tokenURL)!
-        urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: accessKey),
-            URLQueryItem(name: "client_secret", value: secretKey),
-            URLQueryItem(name: "redirect_uri", value: redirectURI),
-            URLQueryItem(name: "code", value: code),
-            URLQueryItem(name: "grant_type", value: "authorization_code")
-        ]
+    func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
         
-        let url = urlComponents.url!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        if lastCode == code { return }
+        task?.cancel()
+        lastCode = code
         
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-            }
-            
-            if let response = response as? HTTPURLResponse,
-               response.statusCode < 200 || response.statusCode > 300 {
-                DispatchQueue.main.async {
-                    completion(.failure(NetworkError.codeError))
-                }
-            }
-            
-            if let data = data {
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    DispatchQueue.main.async {
-                        completion(.success(response.accessToken))
-                    }
-                } catch let error {
-                    DispatchQueue.main.async {
-                        completion(.failure(error))
-                    }
-                }
+        let request = authTokenRequest(code: code)
+        let task = urlSession.dataTask(type: OAuthTokenResponseBody.self, for: request) { [weak self] result in
+            switch result {
+            case .success(let body):
+                self?.authToken = body.accessToken
+                completion(.success(body.accessToken))
+                self?.task = nil
+            case .failure(let error):
+                completion(.failure(error))
+                self?.task = nil
+                self?.lastCode = nil
             }
         }
-        task.resume()
+        self.task = task
     }
 }
+
+extension OAuth2Service {
+    
+    private func authTokenRequest(code: String) -> URLRequest {
+        URLRequest.makeHTTPRequest(
+            path: "/oauth/token"
+            + "?client_id=\(accessKey)"
+            + "&&client_secret=\(secretKey)"
+            + "&&redirect_uri=\(redirectURI)"
+            + "&&code=\(code)"
+            + "&&grant_type=authorization_code",
+            httpMethod: .POST,
+            baseURL: URL(string: "https://unsplash.com")!
+        )
+    }
+    
+    private struct OAuthTokenResponseBody: Decodable {
+        let accessToken: String
+        let tokenType: String
+        let scope: String
+        let createdAt: Int
+    }
+}
+
