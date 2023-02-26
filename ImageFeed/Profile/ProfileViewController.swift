@@ -9,6 +9,7 @@ final class ProfileViewController: UIViewController {
     private let profileNameLabel = UILabel(text: "", font: .ysBold(23))
     private let loginNameLabel = UILabel(text: "", textColor: .ypGray)
     private let profileDescription = UILabel(text: "")
+    private let notification = NotificationCenter.default
     
     private var profileImageServiceObserver: NSObjectProtocol?
     
@@ -16,14 +17,15 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
+        profileImageServiceObserver = notification.addObserver(
                 forName: ProfileImageService.didChangeNotification,
                 object: nil,
-                queue: .main) { [weak self] _ in
-                    guard let self else { return }
-                    self.updateAvatar()
-                }
+                queue: .main
+        ) {
+            [weak self] _ in
+            guard let self else { return }
+            self.updateAvatar()
+        }
         updateAvatar()
         setupUI()
         updateProfileInfo(profile: profileService.profile)

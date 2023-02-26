@@ -6,6 +6,7 @@ final class ProfileImageService {
     
     static let shared = ProfileImageService()
     private let task = URLSession.shared
+    private let notification = NotificationCenter.default
     private(set) var avatarURL: String?
     
     struct UserResult: Decodable {
@@ -30,9 +31,11 @@ final class ProfileImageService {
             case .success(let image):
                 completion(.success(image))
                 
-                NotificationCenter.default.post(name: ProfileImageService.didChangeNotification,
-                                                object: self,
-                                                userInfo: ["URL": image])
+                self.notification.post(
+                    name: ProfileImageService.didChangeNotification,
+                    object: self,
+                    userInfo: ["URL": image]
+                )
                 
                 self.avatarURL = image.profileImage.small
                 
