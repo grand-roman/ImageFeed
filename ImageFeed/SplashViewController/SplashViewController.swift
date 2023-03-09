@@ -3,11 +3,14 @@ import ProgressHUD
 
 class SplashViewController: UIViewController {
     
+    static let shared = SplashViewController()
+    
     private let oAuth2TokenStorage = OAuth2TokenStorage()
     private let oAuth2Service = OAuth2Service()
     private let profileService = ProfileService.shared
     private let ypLaunchLogo = UIImageView(image: .ypLaunchLogo).withConstraints()
     
+    //MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -17,6 +20,7 @@ class SplashViewController: UIViewController {
         super.viewDidAppear(animated)
         checkToken()
     }
+    //MARK: SetupUI
     private func setupUI() {
         view.backgroundColor = .ypBlack
         view.addSubview(ypLaunchLogo)
@@ -26,6 +30,7 @@ class SplashViewController: UIViewController {
             ypLaunchLogo.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
+    //MARK: Private Methods
     private func checkToken() {
         if oAuth2TokenStorage.token != nil {
             fetchProfile()
@@ -65,7 +70,7 @@ class SplashViewController: UIViewController {
         window.rootViewController = tabBarController
     }
     
-    private func showAlert(on vc: UIViewController) {
+    func showAlert(on vc: UIViewController) {
         let alert = UIAlertController(
             title: "Что-то пошло не так(",
             message: "Не удалось войти в систему",
@@ -76,6 +81,7 @@ class SplashViewController: UIViewController {
         vc.present(alert, animated: true, completion: nil)
     }
 }
+//MARK: Extension SplashVC
 extension SplashViewController: AuthViewControllerDelegate {
     func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
         UIBlockingProgressHUD.show()
