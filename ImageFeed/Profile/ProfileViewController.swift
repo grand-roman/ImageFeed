@@ -102,8 +102,28 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    //Заглушка для настройки кнопки. Пока не используется
-    @objc
-    private func didTapLogoutButton() {}
+    func logout() {
+        OAuth2TokenStorage().clearToken()
+        WebViewViewController.clean()
+        tabBarController?.dismiss(animated: true)
+        guard let window = UIApplication.shared.windows.first else { fatalError("Invalid configuration")}
+        window.rootViewController = SplashViewController()
+        window.makeKeyAndVisible()
+    }
     
+    @objc
+    private func didTapLogoutButton() {
+        let alert = UIAlertController(
+            title: "Выход из профиля",
+            message: "Вы уверены?",
+            preferredStyle: .alert)
+        let noButton = UIAlertAction(title: "Нет", style: .cancel)
+        let yesButton = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            guard let self else { return }
+            self.logout()
+        }
+        alert.addAction(noButton)
+        alert.addAction(yesButton)
+        present(alert, animated: true)
+    }
 }
