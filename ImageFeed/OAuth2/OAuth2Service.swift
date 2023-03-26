@@ -36,14 +36,15 @@ final class OAuth2Service {
     }
 }
 
+//MARK: OAuth2Servise
 extension OAuth2Service {
     
     private func authTokenRequest(code: String) -> URLRequest {
         URLRequest.makeHTTPRequest(
             path: "/oauth/token"
-            + "?client_id=\(accessKey)"
-            + "&&client_secret=\(secretKey)"
-            + "&&redirect_uri=\(redirectURI)"
+            + "?client_id=\(myAccessKey)"
+            + "&&client_secret=\(mySecretKey)"
+            + "&&redirect_uri=\(myRedirectURI)"
             + "&&code=\(code)"
             + "&&grant_type=authorization_code",
             httpMethod: .POST,
@@ -58,4 +59,7 @@ extension OAuth2Service {
         let createdAt: Int
     }
 }
+
+
+
 
