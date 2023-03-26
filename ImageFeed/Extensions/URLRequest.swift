@@ -7,7 +7,7 @@ extension URLRequest {
     static func makeHTTPRequest(
         path: String,
         httpMethod: HTTPMethod = .GET,
-        baseURL: URL = defaultBaseURL,
+        baseURL: URL = defaultBaseUrl,
         token: String? = nil
     ) -> URLRequest {
         var request = URLRequest(url: URL(string: path, relativeTo: baseURL)!)
