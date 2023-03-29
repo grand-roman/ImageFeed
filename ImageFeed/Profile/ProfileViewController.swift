@@ -9,7 +9,6 @@ final class ProfileViewController: UIViewController {
     private let profileNameLabel = UILabel(text: "", font: .ysBold(23))
     private let loginNameLabel = UILabel(text: "", textColor: .ypGray)
     private let profileDescription = UILabel(text: "")
-    private let notification = NotificationCenter.default
     
     private var profileImageServiceObserver: NSObjectProtocol?
     
@@ -17,15 +16,14 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        profileImageServiceObserver = notification.addObserver(
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
                 forName: ProfileImageService.didChangeNotification,
                 object: nil,
-                queue: .main
-        ) {
-            [weak self] _ in
-            guard let self else { return }
-            self.updateAvatar()
-        }
+                queue: .main) { [weak self] _ in
+                    guard let self else { return }
+                    self.updateAvatar()
+                }
         updateAvatar()
         setupUI()
         updateProfileInfo(profile: profileService.profile)
@@ -102,8 +100,28 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    //Заглушка для настройки кнопки. Пока не используется
-    @objc
-    private func didTapLogoutButton() {}
+    private func logout() {
+        OAuth2TokenStorage.shared.clearToken()
+        WebViewViewController.clean()
+        tabBarController?.dismiss(animated: true)
+        guard let window = UIApplication.shared.windows.first else { fatalError("Invalid configuration")}
+        window.rootViewController = SplashViewController()
+        window.makeKeyAndVisible()
+    }
     
+    @objc
+    private func didTapLogoutButton() {
+        let alert = UIAlertController(
+            title: "Выход из профиля",
+            message: "Вы уверены?",
+            preferredStyle: .alert)
+        let noButton = UIAlertAction(title: "Нет", style: .cancel)
+        let yesButton = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            guard let self else { return }
+            self.logout()
+        }
+        alert.addAction(noButton)
+        alert.addAction(yesButton)
+        present(alert, animated: true)
+    }
 }

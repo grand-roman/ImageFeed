@@ -67,7 +67,10 @@
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hos-tW-c1L">
                                                     <rect key="frame" x="358" y="12" width="30" height="26"/>
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                    <state key="normal" image="Pressed"/>
+                                                    <state key="normal" image="NotActiveLikeButton"/>
+                                                    <connections>
+                                                        <action selector="likeButtonClicked" destination="AXW-QO-re8" eventType="touchUpInside" id="THw-Da-wkT"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="21 ноября 2022" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b9C-yJ-DUO">
                                                     <rect key="frame" x="27.999999999999993" y="165.33333333333334" width="91.333333333333314" height="15.666666666666657"/>
@@ -215,6 +218,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5oE-PU-z7c">
                                 <rect key="frame" x="16" y="690" width="382" height="48"/>
                                 <color key="backgroundColor" name="YP White(iOS)"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Authenticate"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="f9F-eP-KsV"/>
                                 </constraints>
@@ -253,12 +257,12 @@
         <!--Web View View Controller-->
         <scene sceneID="JZr-gw-o2J">
             <objects>
-                <viewController id="UQN-Cb-uhP" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewViewController" id="UQN-Cb-uhP" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="KjV-5B-e3R">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0ca-wh-xvE">
+                            <wkWebView contentMode="scaleToFill" restorationIdentifier="UnsplashWebView" translatesAutoresizingMaskIntoConstraints="NO" id="0ca-wh-xvE">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <color key="backgroundColor" name="YP White(iOS)"/>
                                 <wkWebViewConfiguration key="configuration">
@@ -285,6 +289,7 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="GA4-au-2di"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <accessibility key="accessibilityConfiguration" identifier="UnsplashWebView"/>
                         <constraints>
                             <constraint firstItem="oOC-IC-7bD" firstAttribute="top" secondItem="GA4-au-2di" secondAttribute="top" id="2Fv-d1-8E0"/>
                             <constraint firstAttribute="trailing" secondItem="VUZ-gJ-GKu" secondAttribute="trailing" id="3SO-Mh-6fS"/>
@@ -311,7 +316,7 @@
         <image name="0" width="200" height="132"/>
         <image name="10" width="200" height="133"/>
         <image name="BackButton" width="9" height="16"/>
-        <image name="Pressed" width="29.333333969116211" height="26"/>
+        <image name="NotActiveLikeButton" width="29.333333969116211" height="26"/>
         <image name="ShareButton" width="51" height="51"/>
         <image name="auth_screen_logo" width="60" height="60"/>
         <image name="black_back_button" width="9" height="16"/>
