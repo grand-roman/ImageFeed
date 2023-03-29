@@ -46,6 +46,19 @@ final class WebViewTests: XCTestCase {
         XCTAssertFalse(shouldHideProgress)
     }
     
+    func testProgressHiddenWhenOne() {
+        // Given
+        let authHelper = AuthHelper()
+        let presenter = WebViewPresenter(authHelper: authHelper)
+        let progress: Float = 1
+        
+        // When
+        let shouldHideProgress = presenter.shouldHideProgress(for: progress)
+        
+        // Then
+        XCTAssertTrue(shouldHideProgress)
+    }
+    
     func testCodeFromURL() {
         //given
         var urlComponents = URLComponents(string: "https://unsplash.com/oauth/authorize/native")!
