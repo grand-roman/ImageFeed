@@ -1,6 +1,23 @@
 import UIKit
 import ProgressHUD
 
+
+extension UIViewController {
+    
+    func showAlert(on vc: UIViewController) {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        let action = UIAlertAction(title: "Ок", style: .cancel)
+        alert.addAction(action)
+        vc.present(alert, animated: true, completion: nil)
+    }
+    
+}
+
+
 final class SplashViewController: UIViewController {
     
     private let profileService = ProfileService.shared
@@ -66,16 +83,6 @@ final class SplashViewController: UIViewController {
         window.rootViewController = tabBarController
     }
     
-    func showAlert(on vc: UIViewController) {
-        let alert = UIAlertController(
-            title: "Что-то пошло не так(",
-            message: "Не удалось войти в систему",
-            preferredStyle: .alert
-        )
-        let action = UIAlertAction(title: "Ок", style: .cancel)
-        alert.addAction(action)
-        vc.present(alert, animated: true, completion: nil)
-    }
 }
 //MARK: Extension SplashVC
 extension SplashViewController: AuthViewControllerDelegate {
