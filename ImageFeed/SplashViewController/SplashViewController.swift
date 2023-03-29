@@ -3,8 +3,6 @@ import ProgressHUD
 
 final class SplashViewController: UIViewController {
     
-    static let shared = SplashViewController()
-    
     private let profileService = ProfileService.shared
     private let ypLaunchLogo = UIImageView(image: .ypLaunchLogo).withConstraints()
     

@@ -122,7 +122,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
             case .failure(let error):
                 print(error)
                 UIBlockingProgressHUD.dismiss()
-                SplashViewController.shared.showAlert(on: self)
+                SplashViewController().showAlert(on: self)
             }
         }
     }
