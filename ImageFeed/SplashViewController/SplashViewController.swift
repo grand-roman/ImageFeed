@@ -5,8 +5,6 @@ final class SplashViewController: UIViewController {
     
     static let shared = SplashViewController()
     
-    private let oAuth2TokenStorage = OAuth2TokenStorage()
-    private let oAuth2Service = OAuth2Service()
     private let profileService = ProfileService.shared
     private let ypLaunchLogo = UIImageView(image: .ypLaunchLogo).withConstraints()
     
@@ -32,7 +30,7 @@ final class SplashViewController: UIViewController {
     }
     //MARK: Private Methods
     private func checkToken() {
-        if oAuth2TokenStorage.token != nil {
+        if OAuth2TokenStorage.shared.token != nil {
             fetchProfile()
         } else {
             switchToAuthViewController()
@@ -92,13 +90,13 @@ extension SplashViewController: AuthViewControllerDelegate {
     }
     
     private func fetchOAuthToken(_ code: String) {
-        oAuth2Service.fetchOAuthToken(code) { [weak self] result in
+        OAuth2Service.shared.fetchOAuthToken(code) { [weak self] result in
             guard let self else { return }
             
             switch result {
             case .success(let token):
                 print("✅ token - \(token)")
-                self.oAuth2TokenStorage.token = token
+                OAuth2TokenStorage.shared.token = token
                 self.fetchProfile()
             case .failure(let error):
                 print(error)

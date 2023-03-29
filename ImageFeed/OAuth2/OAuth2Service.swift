@@ -7,9 +7,11 @@ final class OAuth2Service {
     private var task: URLSessionTask?
     private var lastCode: String?
     
+    private init() { }
+    
     private (set) var authToken: String? {
-        get { OAuth2TokenStorage().token }
-        set { OAuth2TokenStorage().token = newValue }
+        get { OAuth2TokenStorage.shared.token }
+        set { OAuth2TokenStorage.shared.token = newValue }
     }
     
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {

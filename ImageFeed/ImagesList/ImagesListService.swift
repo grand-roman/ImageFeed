@@ -8,6 +8,8 @@ final class ImagesListService {
     private var lastLoadedPage = 1
     private var task: URLSessionTask?
     
+    private init() { }
+    
     func fetchPhotosNextPage() {
         if task != nil { return }
         let nextPage = lastLoadedPage
@@ -22,7 +24,7 @@ final class ImagesListService {
                 case .success(let photoResult):
                     self.lastLoadedPage += 1
                     self.photos.append(contentsOf: photoResult.map { $0.convertToPhoto() })
-                    NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self)
+                    NotificationCenter.default.post(name: ImagesListService.shared.didChangeNotification, object: self)
                 case .failure(let error):
                     print(error.localizedDescription)
                     

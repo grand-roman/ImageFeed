@@ -14,7 +14,6 @@ final class ImagesListViewController: UIViewController {
     }()
     
     private var photos: [Photo] = []
-    private var imagesListService = ImagesListService.shared
     private var imagesListServiceObserver: NSObjectProtocol?
     
     //MARK: Lifecycle
@@ -32,7 +31,7 @@ final class ImagesListViewController: UIViewController {
                 guard let self else { return }
                 self.updateTableViewAnimated()
             })
-        imagesListService.fetchPhotosNextPage()
+        ImagesListService.shared.fetchPhotosNextPage()
         
     }
     //MARK: Methods
@@ -50,8 +49,8 @@ final class ImagesListViewController: UIViewController {
     
     private func updateTableViewAnimated() {
         let oldCountPhoto = photos.count
-        let newCountPhoto = imagesListService.photos.count
-        photos = imagesListService.photos
+        let newCountPhoto = ImagesListService.shared.photos.count
+        photos = ImagesListService.shared.photos
         if oldCountPhoto != newCountPhoto {
             tableView.performBatchUpdates {
                 let indexPaths = (oldCountPhoto..<newCountPhoto).map { index in
@@ -86,7 +85,7 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row + 1 == photos.count {
-            imagesListService.fetchPhotosNextPage()
+            ImagesListService.shared.fetchPhotosNextPage()
         }
     }
 }
@@ -113,11 +112,11 @@ extension ImagesListViewController: ImagesListCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let photo = photos[indexPath.row]
         UIBlockingProgressHUD.show()
-        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+        ImagesListService.shared.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
             guard let self else { return }
             switch result {
             case .success:
-                self.photos = self.imagesListService.photos
+                self.photos = ImagesListService.shared.photos
                 cell.setIsLiked(self.photos[indexPath.row].isLiked)
                 UIBlockingProgressHUD.dismiss()
             case .failure(let error):

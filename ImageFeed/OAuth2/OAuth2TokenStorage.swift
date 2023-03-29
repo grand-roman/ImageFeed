@@ -6,6 +6,8 @@ final class OAuth2TokenStorage {
     static let shared = OAuth2TokenStorage()
     private let keyChainStorage = KeychainWrapper.standard
     
+    private init() { }
+    
     var token: String? {
         get {
             keyChainStorage.string(forKey: .bearerToken)

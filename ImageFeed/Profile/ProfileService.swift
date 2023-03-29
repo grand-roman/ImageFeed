@@ -30,7 +30,7 @@ class ProfileService {
         let bio: String?
     }
     func fetchProfile(completion: @escaping ProfileBlock) {
-        let request = URLRequest.makeHTTPRequest(path: "me", token: OAuth2TokenStorage().token)
+        let request = URLRequest.makeHTTPRequest(path: "me", token: OAuth2TokenStorage.shared.token)
         
         URLSession.shared.dataTask(type: ProfileResult.self, for: request) { [weak self] result in
             guard let self else { return }

@@ -101,7 +101,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func logout() {
-        OAuth2TokenStorage().clearToken()
+        OAuth2TokenStorage.shared.clearToken()
         WebViewViewController.clean()
         tabBarController?.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else { fatalError("Invalid configuration")}
